@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <title>Hello World!</title>
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+    <p>We are using Node.js <span id="node-version"></span>,
+    Chromium <span id="chrome-version"></span>,
+    and Electron <span id="electron-version"></span>.</p>
+   
+    <div class="confMenu">
+      <p>Button 1</p>
+      <p>Button 2</p>
+      <p>Button 3</p>
+    </div>
+    <br>
+    <div class="conf">
+      <p>Conf1</p>
+      <p>Connect</p>
+      <p>Conf2</p>
+      <p>Connect</p>
+      <p>Conf3</p>
+      <p>Connect</p>
+    </div>
+
+    <script src="./renderer.js"></script>
+  </body>
+</html>
