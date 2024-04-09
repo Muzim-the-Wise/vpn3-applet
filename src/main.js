@@ -3,7 +3,8 @@ const path = require('node:path')
 try {
 	require('electron-reloader')(module);
 } catch {}
-
+const util = require('node:util');
+const execProm = util.promisify(require('node:child_process').exec);
 
 const createWindow = () => {
     const win = new BrowserWindow({
@@ -20,6 +21,20 @@ const createWindow = () => {
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
   })
+
+  async function lsConfs() {
+    try{
+      const { stdout } = await execProm('ls ~/*.pngs');
+    } catch (error) {
+      console.log(error.stderr);
+      return;
+    }
+    const confList = stdout.split("\n");
+    console.log(confList)
+    return stdout;
+  }
+
+  lsConfs();
 
   app.whenReady().then(() => {
     createWindow()
