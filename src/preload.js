@@ -12,6 +12,7 @@ window.addEventListener('DOMContentLoaded', () => {
   })
 
   contextBridge.exposeInMainWorld('electronAPI', {
-    getConfs: () => ipcRenderer.invoke('getConfs')
+    getConfs: () => ipcRenderer.invoke('getConfs'),
+    getSessions: () => ipcRenderer.invoke('getSessions')
   })
   

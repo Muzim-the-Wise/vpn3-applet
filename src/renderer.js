@@ -8,7 +8,15 @@ const testDiv = document.querySelector("#testOutput");
 
 const confBut = document.querySelector("#confBut");
 const confDiv = document.querySelector("#confDiv")
-confBut.addEventListener("click", async (event) => {
+
+function connect (event) {
+    const testNode = document.createElement("p");
+    const testTextNode = document.createTextNode(event.target.previousSibling.textContent);
+    testNode.appendChild(testTextNode);
+    testDiv.appendChild(testNode);
+}
+
+async function refreshConfs (event) {
     while (confDiv.lastElementChild) {
         confDiv.removeChild(confDiv.lastElementChild);
     }
@@ -31,6 +39,24 @@ confBut.addEventListener("click", async (event) => {
         connButNode.classList.add("connBut");
         confDiv.appendChild(connButNode);
     }
+    const buttonsArr = document.querySelectorAll("#confDiv .connBut");
+    for (let but = 0; but < buttonsArr.length; but++) {
+        buttonsArr[but].addEventListener("click", (event) => connect(event));
+    }
     return 1;
-})
+}
 
+addEventListener("load", (event) => refreshConfs(event));
+confBut.addEventListener("click", (event) => refreshConfs(event));
+
+const sessBut = document.querySelector("#sessionBut");
+
+async function listConfs (event) {
+    sess = await window.electronAPI.getSessions();
+    const confNode = document.createElement("p");
+    const textNode = document.createTextNode(JSON.stringify(sess));
+    console.log(sess[0].ConfigName)
+    confNode.appendChild(textNode);
+    testDiv.appendChild(confNode);
+}
+sessBut.addEventListener("click", async (event) => await listConfs(event));
