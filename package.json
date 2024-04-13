@@ -12,5 +12,8 @@
   "devDependencies": {
     "electron": "^29.2.0",
     "electron-reloader": "^1.2.3"
+  },
+  "dependencies": {
+    "custom-electron-prompt": "^1.5.7"
   }
 }

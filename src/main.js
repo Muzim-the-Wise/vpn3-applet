@@ -1,10 +1,12 @@
-const {app, BrowserWindow, ipcMain} = require('electron')
-const path = require('node:path')
+const {app, BrowserWindow, ipcMain, dialog, webContents} = require('electron');
+const path = require('node:path');
 try {
 	require('electron-reloader')(module);
 } catch {}
 const util = require('node:util');
 const execProm = util.promisify(require('node:child_process').exec);
+const prompt = require('custom-electron-prompt');
+const { title } = require('node:process');
 
 const createWindow = () => {
     const win = new BrowserWindow({
@@ -19,7 +21,7 @@ const createWindow = () => {
   }
 
   async function handleConfsLs() {
-    execProm('mkdir -p ~/vpn3Confs');
+    await execProm('mkdir -p ~/vpn3Confs');
     try{
       const { stdout } = await execProm('ls ~/vpn3Confs/*.ovpn');
       const confList = stdout.split("\n");
@@ -60,31 +62,94 @@ const createWindow = () => {
   //   console.log(res);
   // })
   
+  async function handleAddConf () {
+    const { cancelled, filePaths } = await dialog.showOpenDialog({title: 'Select config', filters: [{name: 'configs', extensions: ['ovpn']}], defaultPath: '/home/${USER}'});
+    if (!cancelled) {
+      try{
+        await execProm(`cp ${filePaths} ~/vpn3Confs/`);
+        return true;
+      } catch (error) {
+        console.log(error.stderr);
+        return false;
+      }
+    }
+    return cancelled;
+  }
+  // async function lsConfs() {
+  //   try{
+  //     const { stdout } = await execProm('ls ~/*.pngs');
+  //   } catch (error) {
+  //     console.log(error.stderr);
+  //     return;
+  //   }
+  //   const confList = stdout.split("\n");
+  //   console.log(confList)
+  //   return stdout;
+  // }
 
+  async function handleLogin() {
+    const logpass = await prompt({
+      title: "Enter logpass",
+      label: "Login info",
+      type: "multiInput",
+      multiInputOptions:
+        [
+          {
+            inputAttrs:
+            {
+              placeholder: "cc...",
+              required: true
+            }
+          },
+          {
+            inputAttrs:
+            {
+              type: 'password',
+              placeholder: "password",
+              required: true
+            }
+          }
+        ],
+        resizable: false,
+        width: 300,
+        height: 225,
+    })
+    console.log(logpass);
+    return logpass;
+    //.then(input => console.log(`input == ${input}`)).catch(console.error);
+  }
+
+  async function handleConnect (event, path, logpas) {
+    try{
+      const { stdout } = await execProm(`printf "${logpas[0]}\n${logpas[1]}\n" | openvpn3 session-start --config ${path}`);
+      console.log(stdout);
+      return stdout;
+    } catch (error) {
+      console.log(error.stderr);
+      return false;
+    }
+  }
+  
 
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
   })
 
-  async function lsConfs() {
-    try{
-      const { stdout } = await execProm('ls ~/*.pngs');
-    } catch (error) {
-      console.log(error.stderr);
-      return;
-    }
-    const confList = stdout.split("\n");
-    console.log(confList)
-    return stdout;
-  }
-
-  lsConfs();
+  // app.on('login', (event, webContents, details, authInfo, callback) => {
+  //   event.preventDefault();
+  //   callback('username', 'secret');
+  // })
 
   app.whenReady().then(() => {
     ipcMain.handle('getConfs', handleConfsLs);
     ipcMain.handle('getSessions', handleSessLs);
+    ipcMain.handle('addConf', handleAddConf);
+    ipcMain.handle('loginPromt', handleLogin);
+    ipcMain.handle('connectVPN', handleConnect);
     createWindow();
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
       })
   })
+
+  

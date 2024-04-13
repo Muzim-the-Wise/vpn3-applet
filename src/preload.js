@@ -13,6 +13,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
   contextBridge.exposeInMainWorld('electronAPI', {
     getConfs: () => ipcRenderer.invoke('getConfs'),
-    getSessions: () => ipcRenderer.invoke('getSessions')
+    getSessions: () => ipcRenderer.invoke('getSessions'),
+    addConf: () => ipcRenderer.invoke('addConf'),
+    login: () => ipcRenderer.invoke('loginPromt'),
+    connectVPN: (path, logpas) => ipcRenderer.invoke('connectVPN', path, logpas)
   })
   
