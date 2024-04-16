@@ -1,0 +1,72 @@
+@layer defaults, elements;
+
+@layer defaults {
+    body {
+        background-color: rgb(0, 4, 39);
+        color: azure;
+        margin: 0px;
+    }
+}
+
+@layer elements {
+    /*.conf {
+        display: flex;
+        flex-flow: column nowrap;
+        flex-grow: 5;      
+    }*/
+
+    .confMenu {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        user-select: none;
+        & p {
+            transition: all 0.2s ease-out;
+            flex-grow: 0.2;
+            margin: 0px;
+            border: 4px solid #034877;
+            border-radius: 5px;
+            padding: 8px;
+        }
+        & p:hover {
+            background-color: #034877;
+        }
+        & p:active {
+            background-color: rgb(0, 4, 39);
+            border: 4px solid rgb(0, 4, 39);
+        }
+    }
+
+    #sessBody {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: flex-start;
+    }
+
+    .sessRow {
+        display: grid;
+        grid-template-columns: 1fr 3fr 1fr 3fr 3fr 200px;
+        gap: 0px 0px;
+        & p {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid #034877;
+            padding: 8px;
+        }
+    }
+
+    .connBut {
+        color: red;
+        user-select: none;
+        transition: all 0.2s ease-out;
+    }
+    .connBut:hover {
+        background-color: #034877;
+    }
+    .connBut:active {
+        background-color: rgb(0, 4, 39);
+        border: 4px solid rgb(0, 4, 39);
+    }
+}

@@ -16,6 +16,8 @@ window.addEventListener('DOMContentLoaded', () => {
     getSessions: () => ipcRenderer.invoke('getSessions'),
     addConf: () => ipcRenderer.invoke('addConf'),
     login: () => ipcRenderer.invoke('loginPromt'),
-    connectVPN: (path, logpas) => ipcRenderer.invoke('connectVPN', path, logpas)
+    connectVPN: (path, logpas) => ipcRenderer.invoke('connectVPN', path, logpas),
+    getSessWin: () => ipcRenderer.invoke('getSessWin'),
+    disconnect: (path) => ipcRenderer.invoke('disconnect', path)
   })
   

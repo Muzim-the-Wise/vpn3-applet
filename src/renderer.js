@@ -58,12 +58,13 @@ confBut.addEventListener("click", (event) => refreshConfs(event));
 
 const sessBut = document.querySelector("#sessionBut");
 async function listConfs (event) {
-    sess = await window.electronAPI.getSessions();
-    const confNode = document.createElement("p");
-    const textNode = document.createTextNode(JSON.stringify(sess));
-    console.log(sess[0].ConfigName)
-    confNode.appendChild(textNode);
-    testDiv.appendChild(confNode);
+    // sess = await window.electronAPI.getSessions();
+    // const confNode = document.createElement("p");
+    // const textNode = document.createTextNode(JSON.stringify(sess));
+    // console.log(sess[0].ConfigName)
+    // confNode.appendChild(textNode);
+    // testDiv.appendChild(confNode);
+    await window.electronAPI.getSessWin();
 }
 sessBut.addEventListener("click", async (event) => await listConfs(event));
 

@@ -20,6 +20,18 @@ const createWindow = () => {
     win.loadFile('index.html')
   }
 
+  const createSessWindow = () => {
+    const win = new BrowserWindow({
+      width: 1200,
+      height: 600,
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js')
+      }
+    })
+  
+    win.loadFile('indexSess.html')
+  }
+
   async function handleConfsLs() {
     await execProm('mkdir -p ~/vpn3Confs');
     try{
@@ -130,6 +142,16 @@ const createWindow = () => {
     }
   }
   
+  async function handleDisconnect (event, path) {
+    try{
+      const { stdout } = await execProm(`openvpn3 session-manage --path ${path} --disconnect`);
+      console.log(stdout);
+      return stdout;
+    } catch (error) {
+      console.log(error.stderr);
+      return false;
+    }
+  }
 
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
@@ -146,6 +168,8 @@ const createWindow = () => {
     ipcMain.handle('addConf', handleAddConf);
     ipcMain.handle('loginPromt', handleLogin);
     ipcMain.handle('connectVPN', handleConnect);
+    ipcMain.handle('getSessWin', createSessWindow);
+    ipcMain.handle('disconnect', handleDisconnect);
     createWindow();
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
