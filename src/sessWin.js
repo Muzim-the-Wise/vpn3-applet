@@ -13,7 +13,11 @@ async function listConfs (event) {
         sessBody.removeChild(sessBody.lastElementChild);
     }
     sess = await window.electronAPI.getSessions();
-
+    console.log(sess);
+    if (sess == false) {
+        const infoNode = createP("There's no active sessions.");
+        sessBody.appendChild(infoNode);
+    }
     for (let conf in sess) {
         const sessDiv = document.createElement('div');
         sessDiv.classList.add('sessRow');
@@ -47,3 +51,14 @@ async function listConfs (event) {
 }
 addEventListener("load", (event) => listConfs(event));
 refreshBut.addEventListener("click", async (event) => await listConfs(event));
+
+async function disconnectAll () {
+    for (let div = 0; div < sessBody.children.length; div++) {
+        const sess = sessBody.children[div].children;
+        window.electronAPI.disconnect(sess[sess.length - 2].innerHTML);
+    }
+    setTimeout(() => listConfs(), 5000)
+}
+const discAllBut = document.querySelector('#disconAll');
+discAllBut.addEventListener('click', async (event) => disconnectAll());
+

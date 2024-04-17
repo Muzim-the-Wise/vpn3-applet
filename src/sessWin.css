@@ -41,6 +41,10 @@
         display: flex;
         flex-flow: column nowrap;
         justify-content: flex-start;
+        & p {
+            border: 4px solid #034877;
+            padding: 8px;
+        }
     }
 
     .sessRow {

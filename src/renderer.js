@@ -1,29 +1,39 @@
-const confMenu = document.querySelector(".confMenu");
-
-confMenu.addEventListener("click", (event) =>{
-    console.log(event.target.id);
-})
-
+//Funtion for creating text elements
+function createP (text) {
+    const node = document.createElement('p');
+    const nodeText = document.createTextNode(text);
+    node.appendChild(nodeText);
+    return node;
+}
+//Output for tests
 const testDiv = document.querySelector("#testOutput");
-
+//Button to refresh conf list
 const confBut = document.querySelector("#confBut");
+//Output for config list
 const confDiv = document.querySelector("#confDiv")
-
+//Function to create vpn session
 async function connect (event) {
     const logpas = await window.electronAPI.login();
     if (!logpas) {
         return;
     }
     const confPath = event.target.previousSibling.textContent.replace("\"", "");
-    console.log(confPath);
     const connStatus = await window.electronAPI.connectVPN(confPath, logpas);
-    //const testTextNode = document.createTextNode(event.target.previousSibling.textContent + `\n${logpas[0]} ${logpas[1]}\n`);
-    const testNode = document.createElement("p");
-    const testTextNode = document.createTextNode(connStatus);
-    testNode.appendChild(testTextNode);
-    testDiv.appendChild(testNode);
+    alert(connStatus);
+    refreshConfs();
 }
-
+//Function to disconnect all vpn sessions with this config
+async function disconnect (event) {
+    const conf = event.target.previousSibling.textContent.replace("\"", "");
+    const sessList = await window.electronAPI.getSessions();
+    for (let sessNum = 0; sessNum < sessList.length; sessNum++) {
+        if (conf == sessList[sessNum].ConfigName) {
+            await window.electronAPI.disconnect(sessList[sessNum].Path);
+        }
+    }
+    await refreshConfs();
+}
+//Function to refresh conf lists
 async function refreshConfs (event) {
     while (confDiv.lastElementChild) {
         confDiv.removeChild(confDiv.lastElementChild);
@@ -36,38 +46,39 @@ async function refreshConfs (event) {
         confDiv.appendChild(node);
         return 0;
     }
+    const sess = await window.electronAPI.getSessions();
+    const sessList = sess.map(sess => sess.ConfigName)
+    console.log(sessList);
+
     for (const conf in confArr) {
-        const confNode = document.createElement("p");
-        const textNode = document.createTextNode(confArr[conf]);
-        confNode.appendChild(textNode);
-        confDiv.appendChild(confNode);
-        const connButNode = document.createElement("p");
-        const connTextNode = document.createTextNode('Connect');
-        connButNode.appendChild(connTextNode);
-        connButNode.classList.add("connBut");
-        confDiv.appendChild(connButNode);
+        if (sessList.includes(confArr[conf])) {
+            const status = createP('Connected');
+            status.classList.add('statusUp');
+            confDiv.appendChild(status);
+            const confNode = createP(confArr[conf]);
+            confDiv.appendChild(confNode);
+            const connButNode = createP('Disconnect');
+            connButNode.classList.add("connBut", "conUp");
+            connButNode.addEventListener("click", (event) => disconnect(event));
+            confDiv.appendChild(connButNode);
+        } else {
+            const status = createP('Disconnected');
+            status.classList.add('statusDown');
+            confDiv.appendChild(status);
+            const confNode = createP(confArr[conf]);
+            confDiv.appendChild(confNode);
+            const connButNode = createP('Connect');
+            connButNode.classList.add("connBut", "conDown");
+            connButNode.addEventListener("click", (event) => connect(event));
+            confDiv.appendChild(connButNode);
+        }
     }
-    const buttonsArr = document.querySelectorAll("#confDiv .connBut");
-    for (let but = 0; but < buttonsArr.length; but++) {
-        buttonsArr[but].addEventListener("click", (event) => connect(event));
-    }
-    return 1;
 }
+//Refresh config on app start
 addEventListener("load", (event) => refreshConfs(event));
+//Refresh confs on button press
 confBut.addEventListener("click", (event) => refreshConfs(event));
-
-const sessBut = document.querySelector("#sessionBut");
-async function listConfs (event) {
-    // sess = await window.electronAPI.getSessions();
-    // const confNode = document.createElement("p");
-    // const textNode = document.createTextNode(JSON.stringify(sess));
-    // console.log(sess[0].ConfigName)
-    // confNode.appendChild(textNode);
-    // testDiv.appendChild(confNode);
-    await window.electronAPI.getSessWin();
-}
-sessBut.addEventListener("click", async (event) => await listConfs(event));
-
+//Add config button
 const addConfBut = document.querySelector("#addConfBut");
 addConfBut.addEventListener('click', async () => {
     const filePath = await window.electronAPI.addConf();
@@ -77,3 +88,11 @@ addConfBut.addEventListener('click', async () => {
     alert("Config added succesfully");
     await refreshConfs();
 })
+//Open session windows button
+const sessBut = document.querySelector("#sessionBut");
+async function listConfs (event) {
+    await window.electronAPI.getSessWin();
+}
+sessBut.addEventListener("click", async (event) => await listConfs(event));
+
+console.log()

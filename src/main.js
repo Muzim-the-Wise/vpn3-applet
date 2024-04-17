@@ -16,12 +16,14 @@ const createWindow = () => {
         preload: path.join(__dirname, 'preload.js')
       }
     })
-  
     win.loadFile('index.html')
+    return win;
   }
 
-  const createSessWindow = () => {
+  const createSessWindow = (event) => {
     const win = new BrowserWindow({
+      parent: BrowserWindow.getFocusedWindow(),
+      modal: true,
       width: 1200,
       height: 600,
       webPreferences: {
@@ -70,9 +72,6 @@ const createWindow = () => {
       return false;
     }
   }
-  // lsConfs().then(function(res) {
-  //   console.log(res);
-  // })
   
   async function handleAddConf () {
     const { cancelled, filePaths } = await dialog.showOpenDialog({title: 'Select config', filters: [{name: 'configs', extensions: ['ovpn']}], defaultPath: '/home/${USER}'});
@@ -87,17 +86,6 @@ const createWindow = () => {
     }
     return cancelled;
   }
-  // async function lsConfs() {
-  //   try{
-  //     const { stdout } = await execProm('ls ~/*.pngs');
-  //   } catch (error) {
-  //     console.log(error.stderr);
-  //     return;
-  //   }
-  //   const confList = stdout.split("\n");
-  //   console.log(confList)
-  //   return stdout;
-  // }
 
   async function handleLogin() {
     const logpass = await prompt({
@@ -128,7 +116,6 @@ const createWindow = () => {
     })
     console.log(logpass);
     return logpass;
-    //.then(input => console.log(`input == ${input}`)).catch(console.error);
   }
 
   async function handleConnect (event, path, logpas) {
@@ -138,7 +125,7 @@ const createWindow = () => {
       return stdout;
     } catch (error) {
       console.log(error.stderr);
-      return false;
+      return error.stderr;
     }
   }
   
@@ -168,8 +155,8 @@ const createWindow = () => {
     ipcMain.handle('addConf', handleAddConf);
     ipcMain.handle('loginPromt', handleLogin);
     ipcMain.handle('connectVPN', handleConnect);
-    ipcMain.handle('getSessWin', createSessWindow);
     ipcMain.handle('disconnect', handleDisconnect);
+    ipcMain.handle('getSessWin', createSessWindow);
     createWindow();
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
