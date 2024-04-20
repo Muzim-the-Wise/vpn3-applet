@@ -17,7 +17,23 @@ async function listConfs (event) {
     if (sess == false) {
         const infoNode = createP("There's no active sessions.");
         sessBody.appendChild(infoNode);
+        return;
     }
+    const infoDiv = document.createElement('div');
+    infoDiv.classList.add('sessRow');
+    const infoName = createP('User:');
+    infoDiv.appendChild(infoName);
+    const infoDate = createP("Creation time:");
+    infoDiv.appendChild(infoDate);
+    const infoPID = createP('PID:');
+    infoDiv.appendChild(infoPID);
+    const infoStat = createP('Status:');
+    infoDiv.appendChild(infoStat);
+    const infoPath = createP("Session path:");
+    infoDiv.appendChild(infoPath);
+    const infoBut = createP('Disconnect:');
+    infoDiv.appendChild(infoBut);
+    sessBody.appendChild(infoDiv);
     for (let conf in sess) {
         const sessDiv = document.createElement('div');
         sessDiv.classList.add('sessRow');

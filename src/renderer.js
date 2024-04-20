@@ -40,15 +40,12 @@ async function refreshConfs (event) {
     }
     const confArr = await window.electronAPI.getConfs();
     if (confArr == false) {
-        const node = document.createElement("p");
-        const textNode = document.createTextNode("No configs found in home/vpn3Confs");
-        node.appendChild(textNode);
+        const node = createP("No configs found in home/vpn3Confs");
         confDiv.appendChild(node);
         return 0;
     }
     const sess = await window.electronAPI.getSessions();
-    const sessList = sess.map(sess => sess.ConfigName)
-    console.log(sessList);
+    const sessList = sess.map(sess => sess.ConfigName);
 
     for (const conf in confArr) {
         if (sessList.includes(confArr[conf])) {
@@ -95,4 +92,6 @@ async function listConfs (event) {
 }
 sessBut.addEventListener("click", async (event) => await listConfs(event));
 
-console.log()
+const confDrag = document.querySelector('#confDrag');
+confDrag.addEventListener('dragover', (event) => console.log(event.dataTransfer));
+confDrag.addEventListener('drop', (event) => console.log(event))

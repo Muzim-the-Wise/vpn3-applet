@@ -11,7 +11,7 @@ const { title } = require('node:process');
 const createWindow = () => {
     const win = new BrowserWindow({
       width: 800,
-      height: 600,
+      height: 800,
       webPreferences: {
         preload: path.join(__dirname, 'preload.js')
       }
