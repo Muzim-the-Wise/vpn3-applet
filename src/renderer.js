@@ -93,5 +93,39 @@ async function listConfs (event) {
 sessBut.addEventListener("click", async (event) => await listConfs(event));
 
 const confDrag = document.querySelector('#confDrag');
-confDrag.addEventListener('dragover', (event) => console.log(event.dataTransfer));
-confDrag.addEventListener('drop', (event) => console.log(event))
+function checkForConf (event) {
+    const confReg = /(\.ovpn)$/g;
+    return confReg.test(event.dataTransfer.files[0].name);
+}
+confDrag.addEventListener("dragstart", (event) => {
+    event.preventDefault()
+    console.log('jopa');
+});
+confDrag.addEventListener('dragover', (event) => {
+    event.preventDefault();
+});
+confDrag.addEventListener("dragenter", (event) => {
+    event.preventDefault();
+    console.log(event)
+});
+
+// //const isConf = event.dataTransfer.files[0].path
+// confDrag.addEventListener('dragover', (event) => {
+//     // if (checkForConf(event)) {
+//     //     event.preventDefault();
+//     // }
+//     event.preventDefault();
+//     //console.log(event.dataTransfer);
+// });
+// confDrag.addEventListener("dragenter", (event) => {
+//     // if (checkForConf(event)) {
+//     //     event.preventDefault();
+//     // }
+//     event.preventDefault();
+//     console.log(event.dataTransfer.getData("text"));
+// });
+// confDrag.addEventListener("drop", (event) => {
+//     event.preventDefault();
+//     checkForConf(event);
+//     //console.log(event);
+// });
